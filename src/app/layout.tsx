@@ -26,19 +26,21 @@ export default function RootLayout({
     <html lang="pt-br">
       <body
         className={cn(
-          'min-h-screen bg-background font-sans antialiased max-w-6xl mx-auto p-5 flex flex-col gap-8',
+          'min-h-screen bg-background font-sans antialiased',
           fontSans.variable,
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Header />
-          {children}
-        </ThemeProvider>
+        <div className="max-w-6xl mx-auto p-5 flex flex-col gap-8">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header />
+            {children}
+          </ThemeProvider>
+        </div>
       </body>
     </html>
   )
