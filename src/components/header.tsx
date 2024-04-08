@@ -6,7 +6,9 @@ import { ThemeToggle } from './theme/theme-toggle'
 export default function Header() {
   return (
     <header className="flex items-center gap-5">
-      <h1 className="text-lg font-bold">money.versity</h1>
+      <h1 className="text-lg font-bold">
+        <span className="text-primary">money</span>.versity
+      </h1>
 
       <Separator orientation="vertical" className="h-6" />
 
