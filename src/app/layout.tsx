@@ -26,7 +26,7 @@ export default function RootLayout({
     <html lang="pt-br">
       <body
         className={cn(
-          'min-h-screen bg-background font-sans antialiased max-w-6xl mx-auto p-5 flex flex-col gap-5',
+          'min-h-screen bg-background font-sans antialiased max-w-6xl mx-auto p-5 flex flex-col gap-8',
           fontSans.variable,
         )}
       >
