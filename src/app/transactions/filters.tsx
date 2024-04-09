@@ -1,7 +1,6 @@
 'use client'
 
 import { Calendar } from '@/components/ui/calendar'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
   Popover,
@@ -26,12 +25,8 @@ import { DateRange } from 'react-day-picker'
 export function TransactionsFilters() {
   const [date, setDate] = useState<DateRange | undefined>()
 
-  function showData(formData: FormData) {
-    console.log(date, formData.get('status'), formData.get('query'))
-  }
-
   return (
-    <form action={showData} className="flex items-center gap-2">
+    <form className="flex items-center gap-2">
       <span className="text-sm font-semibold">Filters</span>
 
       <Popover>
@@ -82,17 +77,30 @@ export function TransactionsFilters() {
         </SelectContent>
       </Select>
 
-      <Input name="query" placeholder="Description" className="h-8 w-[340px]" />
+      <Select name="category" defaultValue="all">
+        <SelectTrigger className="h-8 w-[160px]">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All categories</SelectItem>
+          <SelectItem value="food">Food</SelectItem>
+          <SelectItem value="groceries">Groceries</SelectItem>
+          <SelectItem value="transport">Transport</SelectItem>
+          <SelectItem value="salary">Salary</SelectItem>
+        </SelectContent>
+      </Select>
 
-      <Button type="submit" variant={'secondary'} size={'xs'}>
-        <Search className="size-4 mr-2" />
-        Filter results
-      </Button>
+      <div className="ml-auto flex gap-2">
+        <Button type="submit" variant={'secondary'} size={'xs'}>
+          <Search className="size-4 mr-2" />
+          Filter results
+        </Button>
 
-      <Button type="button" variant={'outline'} size={'xs'}>
-        <X className="size-4 mr-2" />
-        Clean filters
-      </Button>
+        <Button type="button" variant={'outline'} size={'xs'}>
+          <X className="size-4 mr-2" />
+          Clean filters
+        </Button>
+      </div>
     </form>
   )
 }
