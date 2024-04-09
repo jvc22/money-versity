@@ -8,6 +8,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { TransactionsTableRow } from './table-row'
+import { Pagination } from './pagination'
 
 export default function Transactions() {
   return (
@@ -34,12 +35,14 @@ export default function Transactions() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Array.from({ length: 12 }).map((_, index) => (
+              {Array.from({ length: 10 }).map((_, index) => (
                 <TransactionsTableRow key={index} />
               ))}
             </TableBody>
           </Table>
         </div>
+
+        <Pagination pageIndex={0} totalCount={120} perPage={10} />
       </div>
     </div>
   )
