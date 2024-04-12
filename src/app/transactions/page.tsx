@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { TransactionsTableRow } from './table-row'
+import { TransactionsTableRow } from './row'
 import {
   ChevronLeft,
   ChevronRight,
