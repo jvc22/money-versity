@@ -14,6 +14,8 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+import { NewTransactionForm } from './form'
 
 export default function Transactions() {
   return (
@@ -21,7 +23,12 @@ export default function Transactions() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
 
-        <Button size={'xs'}>New transaction</Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button size={'xs'}>New transaction</Button>
+          </DialogTrigger>
+          <NewTransactionForm />
+        </Dialog>
       </div>
 
       <div className="space-y-2.5">
