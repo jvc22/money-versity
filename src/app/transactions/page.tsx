@@ -34,9 +34,8 @@ export default function Transactions() {
                 <TableHead className="w-[64px]"></TableHead>
                 <TableHead className="w-[160px]">Amount</TableHead>
                 <TableHead>Date</TableHead>
-                <TableHead className="w-[180px]">Status</TableHead>
-                <TableHead className="w-[180px]">Category</TableHead>
-                <TableHead className="w-[132px]"></TableHead>
+                <TableHead className="w-[200px]">Status</TableHead>
+                <TableHead className="w-[200px]">Category</TableHead>
                 <TableHead className="w-[132px]"></TableHead>
               </TableRow>
             </TableHeader>
