@@ -54,6 +54,7 @@ export function NewTransactionForm() {
                   mode="single"
                   selected={date}
                   onSelect={setDate}
+                  required
                   initialFocus
                 />
               </PopoverContent>
