@@ -15,13 +15,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+
+import { ArrowDownCircle, ArrowUpCircle, CalendarIcon } from 'lucide-react'
+
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
-import { CalendarIcon } from 'lucide-react'
+
 import { useState } from 'react'
 
 export function NewTransactionForm() {
   const [date, setDate] = useState<Date | undefined>(new Date())
+  const [status, setStatus] = useState('income')
 
   return (
     <DialogContent className="max-w-md">
@@ -41,7 +45,7 @@ export function NewTransactionForm() {
                 <Button
                   variant={'outline'}
                   className={cn(
-                    'h-8 w-[210px] justify-start text-left font-normal',
+                    'h-8 w-[220px] justify-start text-left font-normal',
                     !date && 'text-muted-foreground',
                   )}
                 >
@@ -78,7 +82,30 @@ export function NewTransactionForm() {
           </div>
         </div>
 
-        <div></div>
+        <div className="flex gap-3">
+          <Button
+            variant={'outline'}
+            className={cn(
+              'w-full',
+              status === 'income' && 'bg-green-600 hover:bg-green-600',
+            )}
+            onClick={() => setStatus('income')}
+          >
+            <ArrowUpCircle className="size-4 mr-2" />
+            Income
+          </Button>
+          <Button
+            variant={'outline'}
+            className={cn(
+              'w-full',
+              status === 'outcome' && 'bg-red-500 hover:bg-red-500',
+            )}
+            onClick={() => setStatus('outcome')}
+          >
+            <ArrowDownCircle className="size-4 mr-2" />
+            Income
+          </Button>
+        </div>
       </div>
     </DialogContent>
   )
