@@ -133,7 +133,7 @@ export function NewTransactionForm() {
               Category
             </Label>
             <Select defaultValue="transport" required>
-              <SelectTrigger className="h-8 w-40">
+              <SelectTrigger id="category" className="h-8 w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
