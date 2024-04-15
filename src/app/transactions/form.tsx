@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -15,8 +16,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
-import { ArrowDownCircle, ArrowUpCircle, CalendarIcon } from 'lucide-react'
+import {
+  ArrowDownCircle,
+  ArrowUpCircle,
+  CalendarIcon,
+  Type,
+} from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
@@ -82,28 +95,84 @@ export function NewTransactionForm() {
           </div>
         </div>
 
+        <div className="flex items-center gap-1.5">
+          <Label className="text-muted-foreground">Status</Label>
+          <div className="w-full flex gap-3">
+            <Button
+              variant={'outline'}
+              size={'xs'}
+              className={cn(
+                'w-full',
+                status === 'income' &&
+                  'text-white bg-green-600 hover:bg-green-600 hover:text-white',
+              )}
+              onClick={() => setStatus('income')}
+            >
+              <ArrowUpCircle className="size-4 mr-2" />
+              Income
+            </Button>
+            <Button
+              variant={'outline'}
+              size={'xs'}
+              className={cn(
+                'w-full',
+                status === 'outcome' &&
+                  'text-white bg-red-500 hover:bg-red-500 hover:text-white',
+              )}
+              onClick={() => setStatus('outcome')}
+            >
+              <ArrowDownCircle className="size-4 mr-2" />
+              Outcome
+            </Button>
+          </div>
+        </div>
+
         <div className="flex gap-3">
-          <Button
-            variant={'outline'}
-            className={cn(
-              'w-full',
-              status === 'income' && 'bg-green-600 hover:bg-green-600',
-            )}
-            onClick={() => setStatus('income')}
-          >
-            <ArrowUpCircle className="size-4 mr-2" />
-            Income
-          </Button>
-          <Button
-            variant={'outline'}
-            className={cn(
-              'w-full',
-              status === 'outcome' && 'bg-red-500 hover:bg-red-500',
-            )}
-            onClick={() => setStatus('outcome')}
-          >
-            <ArrowDownCircle className="size-4 mr-2" />
-            Income
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="category" className="text-muted-foreground">
+              Category
+            </Label>
+            <Select defaultValue="transport" required>
+              <SelectTrigger className="h-8 w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="transport">Transport</SelectItem>
+                <SelectItem value="church">Church</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="description" className="text-muted-foreground">
+              Description (optional)
+            </Label>
+            <div className="flex items-center">
+              <span className="h-8 flex items-center px-3 text-sm text-muted-foreground border rounded-l-md">
+                <Type className="size-4" />
+              </span>
+              <Input
+                id="description"
+                autoComplete="off"
+                placeholder="Describe transaction"
+                className="h-8 border-l-0 rounded-l-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <span className="text-sm">Please, inform all required data.</span>
+        </div>
+
+        <div className="flex gap-3">
+          <DialogClose asChild>
+            <Button size={'xs'} variant={'secondary'} className="w-full">
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button size={'xs'} className="w-full">
+            Register
           </Button>
         </div>
       </div>
