@@ -15,8 +15,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-import { TransactionsFilters } from './transactions-table-filters'
 import { NewTransactionForm } from './transactions-form'
+import { TransactionsFilters } from './transactions-table-filters'
 import { TransactionsTableRow } from './transactions-table-row'
 
 export default function Transactions() {
@@ -45,8 +45,8 @@ export default function Transactions() {
                 <TableHead>Date</TableHead>
                 <TableHead className="w-[140px]">Status</TableHead>
                 <TableHead className="w-[200px]">Category</TableHead>
-                <TableHead className="w-[132px]"></TableHead>
-                <TableHead className="w-[132px]"></TableHead>
+                <TableHead className="w-[110px]"></TableHead>
+                <TableHead className="w-[110px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

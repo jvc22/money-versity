@@ -22,7 +22,7 @@ export function TransactionsTableRow() {
         </Dialog>
       </TableCell>
       <TableCell className="font-medium">R$ 333,33</TableCell>
-      <TableCell>22th of October 2023</TableCell>
+      <TableCell>Sunday, October 22th, 2023</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-green-500" />
