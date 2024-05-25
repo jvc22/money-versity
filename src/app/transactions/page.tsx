@@ -15,9 +15,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-import { TransactionsFilters } from './filters'
-import { NewTransactionForm } from './form'
-import { TransactionsTableRow } from './row'
+import { TransactionsFilters } from './transactions-table-filters'
+import { NewTransactionForm } from './transactions-form'
+import { TransactionsTableRow } from './transactions-table-row'
 
 export default function Transactions() {
   return (

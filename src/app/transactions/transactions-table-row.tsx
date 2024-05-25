@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 
-import { TransactionDetails } from './details'
+import { TransactionDetails } from './transactions-details'
 
 export function TransactionsTableRow() {
   return (
