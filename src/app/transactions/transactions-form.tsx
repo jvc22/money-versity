@@ -1,5 +1,14 @@
 'use client'
 
+import { format } from 'date-fns'
+import {
+  ArrowDownCircle,
+  ArrowUpCircle,
+  CalendarIcon,
+  Type,
+} from 'lucide-react'
+import { useState } from 'react'
+
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -23,18 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
-import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  CalendarIcon,
-  Type,
-} from 'lucide-react'
-
 import { cn } from '@/lib/utils'
-import { format } from 'date-fns'
-
-import { useState } from 'react'
 
 export function NewTransactionForm() {
   const [date, setDate] = useState<Date | undefined>(new Date())

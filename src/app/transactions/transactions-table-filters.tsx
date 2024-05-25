@@ -1,7 +1,12 @@
 'use client'
 
-import { Calendar } from '@/components/ui/calendar'
+import { format } from 'date-fns'
+import { CalendarIcon, Search, X } from 'lucide-react'
+import { useState } from 'react'
+import { DateRange } from 'react-day-picker'
+
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   Popover,
   PopoverContent,
@@ -14,13 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { CalendarIcon, Search, X } from 'lucide-react'
-
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
-
-import { format } from 'date-fns'
-import { DateRange } from 'react-day-picker'
 
 export function TransactionsFilters() {
   const [date, setDate] = useState<DateRange | undefined>()
