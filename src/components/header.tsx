@@ -1,7 +1,8 @@
 import { Home, Wallet } from 'lucide-react'
+
 import NavLink from './nav-link'
-import { Separator } from './ui/separator'
 import { ThemeToggle } from './theme/theme-toggle'
+import { Separator } from './ui/separator'
 
 export default function Header() {
   return (
