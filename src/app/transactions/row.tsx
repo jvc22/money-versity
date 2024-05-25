@@ -1,8 +1,10 @@
+import { Pencil, Search, X } from 'lucide-react'
+
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
-import { Search, X } from 'lucide-react'
+
 import { TransactionDetails } from './details'
 
 export function TransactionsTableRow() {
@@ -29,6 +31,12 @@ export function TransactionsTableRow() {
       </TableCell>
       <TableCell>
         <Badge variant={'secondary'}>Church</Badge>
+      </TableCell>
+      <TableCell>
+        <Button variant={'ghost'} size={'xs'}>
+          <Pencil className="size-3 mr-2" />
+          Edit
+        </Button>
       </TableCell>
       <TableCell>
         <Button variant={'ghost'} size={'xs'}>

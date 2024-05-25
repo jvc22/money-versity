@@ -1,5 +1,12 @@
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
-import { TransactionsFilters } from './filters'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import {
   Table,
   TableBody,
@@ -7,15 +14,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { TransactionsTableRow } from './row'
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from 'lucide-react'
-import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+
+import { TransactionsFilters } from './filters'
 import { NewTransactionForm } from './form'
+import { TransactionsTableRow } from './row'
 
 export default function Transactions() {
   return (
@@ -41,8 +43,9 @@ export default function Transactions() {
                 <TableHead className="w-[64px]"></TableHead>
                 <TableHead className="w-[160px]">Amount</TableHead>
                 <TableHead>Date</TableHead>
-                <TableHead className="w-[200px]">Status</TableHead>
+                <TableHead className="w-[140px]">Status</TableHead>
                 <TableHead className="w-[200px]">Category</TableHead>
+                <TableHead className="w-[132px]"></TableHead>
                 <TableHead className="w-[132px]"></TableHead>
               </TableRow>
             </TableHeader>
