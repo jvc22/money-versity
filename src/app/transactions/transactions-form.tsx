@@ -119,7 +119,7 @@ export function NewTransactionForm() {
         toast.success('Transaction created successfully.')
 
         reset({
-          amount: 0,
+          amount: NaN,
           description: '',
         })
       }
