@@ -1,9 +1,12 @@
+'use client'
+
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
@@ -20,16 +23,19 @@ import { TransactionsFilters } from './transactions-table-filters'
 import { TransactionsTableRow } from './transactions-table-row'
 
 export default function Transactions() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
 
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button size={'xs'}>New transaction</Button>
           </DialogTrigger>
-          <NewTransactionForm />
+
+          {isDialogOpen && <NewTransactionForm />}
         </Dialog>
       </div>
 
