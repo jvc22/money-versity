@@ -30,7 +30,7 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <div className="max-w-6xl mx-auto p-5 flex flex-col gap-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-8 p-5">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
