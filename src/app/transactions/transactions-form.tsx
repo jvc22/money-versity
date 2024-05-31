@@ -1,5 +1,6 @@
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import {
   ArrowDownCircle,
@@ -7,7 +8,10 @@ import {
   CalendarIcon,
   Type,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -34,9 +38,90 @@ import {
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 
+import { createTransaction, fetchCategories } from './actions'
+
+interface Categories {
+  id: number
+  value: string
+  label: string
+}
+
+const createTransactionFormSchema = z
+  .object({
+    amount: z
+      .number({ message: 'Please, provide a valid number.' })
+      .min(0.01, { message: 'Please, provide the transaction amount' }),
+    description: z
+      .string()
+      .max(32, { message: 'Maximum of 32 characters for description.' })
+      .optional(),
+  })
+  .refine((data) => {
+    const stringValue = String(data.amount)
+
+    if (stringValue.includes(',')) {
+      const newVal = stringValue.replace(',', '.')
+
+      return {
+        amount: parseFloat(newVal),
+        description: data.description,
+      }
+    }
+
+    return data
+  })
+
+export type CreateTransactionFormData = z.infer<
+  typeof createTransactionFormSchema
+>
+
 export function NewTransactionForm() {
+  const [categories, setCategories] = useState<Categories[]>([])
+
   const [date, setDate] = useState<Date | undefined>(new Date())
   const [status, setStatus] = useState('income')
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<CreateTransactionFormData>({
+    resolver: zodResolver(createTransactionFormSchema),
+  })
+
+  useEffect(() => {
+    async function getCategories() {
+      try {
+        const data = await fetchCategories()
+
+        setCategories(data)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    getCategories()
+  }, [])
+
+  async function handleCreateNewTransaction(
+    formData: CreateTransactionFormData,
+  ) {
+    try {
+      const response = await createTransaction(formData)
+
+      if (response.status === 201) {
+        toast.success('Transaction created successfully.')
+
+        reset({
+          amount: 0,
+          description: '',
+        })
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   return (
     <DialogContent className="max-w-md">
@@ -45,7 +130,10 @@ export function NewTransactionForm() {
         <DialogDescription>Create a new transaction registry</DialogDescription>
       </DialogHeader>
 
-      <div className="space-y-6">
+      <form
+        onSubmit={handleSubmit(handleCreateNewTransaction)}
+        className="space-y-6"
+      >
         <div className="flex gap-3">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="date-picker" className="text-muted-foreground">
@@ -85,9 +173,14 @@ export function NewTransactionForm() {
                 R$
               </span>
               <Input
-                id="amount"
-                placeholder="Insert a value"
-                className="h-8 rounded-l-none border-l-0"
+                {...register('amount', {
+                  valueAsNumber: true,
+                })}
+                placeholder="100.00"
+                type="number"
+                autoComplete="off"
+                step="0.01"
+                className="h-8 rounded-l-none border-l-0 text-end"
               />
             </div>
           </div>
@@ -135,8 +228,11 @@ export function NewTransactionForm() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="transport">Transport</SelectItem>
-                <SelectItem value="church">Church</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.value}>
+                    {category.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -150,9 +246,9 @@ export function NewTransactionForm() {
                 <Type className="size-4" />
               </span>
               <Input
-                id="description"
+                {...register('description')}
                 autoComplete="off"
-                placeholder="Describe transaction"
+                placeholder="Transaction details"
                 className="h-8 rounded-l-none border-l-0"
               />
             </div>
@@ -160,20 +256,40 @@ export function NewTransactionForm() {
         </div>
 
         <div>
-          <span className="text-sm">Please, inform all required data.</span>
+          {errors.amount ? (
+            <span className="text-sm text-red-400">
+              {errors.amount.message}
+            </span>
+          ) : errors.description ? (
+            <span className="text-sm text-red-400">
+              {errors.description.message}
+            </span>
+          ) : (
+            <span className="text-sm">Please, inform all required data.</span>
+          )}
         </div>
 
         <div className="flex gap-3">
           <DialogClose asChild>
-            <Button size={'xs'} variant={'secondary'} className="w-full">
+            <Button
+              size={'xs'}
+              variant={'secondary'}
+              type="reset"
+              className="w-full"
+            >
               Cancel
             </Button>
           </DialogClose>
-          <Button size={'xs'} className="w-full">
+          <Button
+            size={'xs'}
+            disabled={isSubmitting}
+            type="submit"
+            className="w-full"
+          >
             Register
           </Button>
         </div>
-      </div>
+      </form>
     </DialogContent>
   )
 }
