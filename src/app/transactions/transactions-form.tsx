@@ -90,7 +90,6 @@ export function NewTransactionForm() {
     handleSubmit,
     reset,
     control,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<CreateTransactionFormData>({
     resolver: zodResolver(createTransactionFormSchema),
@@ -128,9 +127,6 @@ export function NewTransactionForm() {
       console.error(err)
     }
   }
-
-  const vars = watch(['amount', 'category', 'description'])
-  console.log(vars)
 
   return (
     <DialogContent className="max-w-md">
