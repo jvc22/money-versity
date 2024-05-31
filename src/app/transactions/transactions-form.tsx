@@ -81,13 +81,13 @@ export function NewTransactionForm() {
               Amount
             </Label>
             <div className="flex items-center">
-              <span className="h-8 flex items-center px-3 text-sm text-muted-foreground border rounded-l-md">
+              <span className="flex h-8 items-center rounded-l-md border px-3 text-sm text-muted-foreground">
                 R$
               </span>
               <Input
                 id="amount"
                 placeholder="Insert a value"
-                className="h-8 border-l-0 rounded-l-none"
+                className="h-8 rounded-l-none border-l-0"
               />
             </div>
           </div>
@@ -95,18 +95,18 @@ export function NewTransactionForm() {
 
         <div className="flex items-center gap-1.5">
           <Label className="text-muted-foreground">Status</Label>
-          <div className="w-full flex gap-3">
+          <div className="flex w-full gap-3">
             <Button
               variant={'outline'}
               size={'xs'}
               className={cn(
                 'w-full',
                 status === 'income' &&
-                  'text-white bg-green-600 hover:bg-green-600 hover:text-white',
+                  'bg-green-600 text-white hover:bg-green-600 hover:text-white',
               )}
               onClick={() => setStatus('income')}
             >
-              <ArrowUpCircle className="size-4 mr-2" />
+              <ArrowUpCircle className="mr-2 size-4" />
               Income
             </Button>
             <Button
@@ -115,11 +115,11 @@ export function NewTransactionForm() {
               className={cn(
                 'w-full',
                 status === 'outcome' &&
-                  'text-white bg-red-500 hover:bg-red-500 hover:text-white',
+                  'bg-red-500 text-white hover:bg-red-500 hover:text-white',
               )}
               onClick={() => setStatus('outcome')}
             >
-              <ArrowDownCircle className="size-4 mr-2" />
+              <ArrowDownCircle className="mr-2 size-4" />
               Outcome
             </Button>
           </div>
@@ -146,14 +146,14 @@ export function NewTransactionForm() {
               Description (optional)
             </Label>
             <div className="flex items-center">
-              <span className="h-8 flex items-center px-3 text-sm text-muted-foreground border rounded-l-md">
+              <span className="flex h-8 items-center rounded-l-md border px-3 text-sm text-muted-foreground">
                 <Type className="size-4" />
               </span>
               <Input
                 id="description"
                 autoComplete="off"
                 placeholder="Describe transaction"
-                className="h-8 border-l-0 rounded-l-none"
+                className="h-8 rounded-l-none border-l-0"
               />
             </div>
           </div>

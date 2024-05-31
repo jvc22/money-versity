@@ -14,7 +14,7 @@ export default function NavLink(props: NavLinkProps) {
     <a
       {...props}
       data-current={pathname === props.href}
-      className="flex items-center gap-1.5 font-medium text-muted-foreground data-[current=true]:text-foreground text-sm hover:text-foreground transition-all ease-out"
+      className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-all ease-out hover:text-foreground data-[current=true]:text-foreground"
     >
       {props.children}
     </a>

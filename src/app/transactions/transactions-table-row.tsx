@@ -34,13 +34,13 @@ export function TransactionsTableRow() {
       </TableCell>
       <TableCell>
         <Button variant={'ghost'} size={'xs'}>
-          <Pencil className="size-3 mr-2" />
+          <Pencil className="mr-2 size-3" />
           Edit
         </Button>
       </TableCell>
       <TableCell>
         <Button variant={'ghost'} size={'xs'}>
-          <X className="size-3 mr-2" />
+          <X className="mr-2 size-3" />
           Delete
         </Button>
       </TableCell>

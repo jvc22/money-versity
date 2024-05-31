@@ -91,12 +91,12 @@ export function TransactionsFilters() {
 
       <div className="ml-auto flex gap-2">
         <Button type="submit" variant={'secondary'} size={'xs'}>
-          <Search className="size-4 mr-2" />
+          <Search className="mr-2 size-4" />
           Filter results
         </Button>
 
         <Button type="button" variant={'outline'} size={'xs'}>
-          <X className="size-4 mr-2" />
+          <X className="mr-2 size-4" />
           Clean filters
         </Button>
       </div>
