@@ -9,7 +9,7 @@ import {
   Type,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -50,7 +50,10 @@ const createTransactionFormSchema = z
   .object({
     amount: z
       .number({ message: 'Please, provide a valid number.' })
-      .min(0.01, { message: 'Please, provide the transaction amount' }),
+      .min(0.01, { message: 'Please, provide the transaction amount.' }),
+    category: z
+      .string({ message: 'Please, select a category.' })
+      .min(1, { message: 'Please, select a category.' }),
     description: z
       .string()
       .max(32, { message: 'Maximum of 32 characters for description.' })
@@ -64,6 +67,7 @@ const createTransactionFormSchema = z
 
       return {
         amount: parseFloat(newVal),
+        category: data.category,
         description: data.description,
       }
     }
@@ -85,6 +89,8 @@ export function NewTransactionForm() {
     register,
     handleSubmit,
     reset,
+    control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CreateTransactionFormData>({
     resolver: zodResolver(createTransactionFormSchema),
@@ -122,6 +128,9 @@ export function NewTransactionForm() {
       console.error(err)
     }
   }
+
+  const vars = watch(['amount', 'category', 'description'])
+  console.log(vars)
 
   return (
     <DialogContent className="max-w-md">
@@ -223,18 +232,31 @@ export function NewTransactionForm() {
             <Label htmlFor="category" className="text-muted-foreground">
               Category
             </Label>
-            <Select defaultValue="transport" required>
-              <SelectTrigger id="category" className="h-8 w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.value}>
-                    {category.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Controller
+              control={control}
+              name="category"
+              render={({ field: { name, onChange, value, disabled } }) => {
+                return (
+                  <Select
+                    name={name}
+                    onValueChange={onChange}
+                    value={value}
+                    disabled={disabled}
+                  >
+                    <SelectTrigger className="h-8 w-40">
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )
+              }}
+            />
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -259,6 +281,10 @@ export function NewTransactionForm() {
           {errors.amount ? (
             <span className="text-sm text-red-400">
               {errors.amount.message}
+            </span>
+          ) : errors.category ? (
+            <span className="text-sm text-red-400">
+              {errors.category.message}
             </span>
           ) : errors.description ? (
             <span className="text-sm text-red-400">
