@@ -5,6 +5,7 @@ import { Inter as FontSans } from 'next/font/google'
 
 import Header from '@/components/header'
 import { ThemeProvider } from '@/components/theme/theme-provider'
+import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/lib/utils'
 
 const fontSans = FontSans({
@@ -41,6 +42,8 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </div>
+
+        <Toaster />
       </body>
     </html>
   )
