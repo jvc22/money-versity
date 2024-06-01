@@ -29,6 +29,7 @@ npm run dev
 
 - **Client**:
   - Next.js 14
+  - PrismaORM
   - TypeScript
   - TailwindCSS
 - **Additional dependencies**:
