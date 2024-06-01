@@ -36,6 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 
 import { createTransaction, fetchCategories } from './actions'
@@ -48,9 +49,13 @@ interface Categories {
 
 const createTransactionFormSchema = z
   .object({
+    date: z.date({ message: 'Please, select a date.' }),
     amount: z
       .number({ message: 'Please, provide a valid number.' })
       .min(0.01, { message: 'Please, provide the transaction amount.' }),
+    status: z.enum(['income', 'outcome'], {
+      message: 'Please, select a transaction status.',
+    }),
     category: z
       .string({ message: 'Please, select a category.' })
       .min(1, { message: 'Please, select a category.' }),
@@ -82,18 +87,22 @@ export type CreateTransactionFormData = z.infer<
 export function NewTransactionForm() {
   const [categories, setCategories] = useState<Categories[]>([])
 
-  const [date, setDate] = useState<Date | undefined>(new Date())
-  const [status, setStatus] = useState('income')
-
   const {
     register,
     handleSubmit,
     reset,
     control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CreateTransactionFormData>({
     resolver: zodResolver(createTransactionFormSchema),
+    defaultValues: {
+      date: new Date(),
+      status: 'income',
+    },
   })
+
+  const date = watch('date')
 
   useEffect(() => {
     async function getCategories() {
@@ -119,7 +128,9 @@ export function NewTransactionForm() {
         toast.success('Transaction created successfully.')
 
         reset({
+          date: new Date(),
           amount: NaN,
+          status: 'income',
           description: '',
         })
       }
@@ -144,29 +155,39 @@ export function NewTransactionForm() {
             <Label htmlFor="date-picker" className="text-muted-foreground">
               Date
             </Label>
-            <Popover>
-              <PopoverTrigger asChild id="date-picker">
-                <Button
-                  variant={'outline'}
-                  className={cn(
-                    'h-8 w-[220px] justify-start text-left font-normal',
-                    !date && 'text-muted-foreground',
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, 'PPP') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  required
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Controller
+              control={control}
+              name="date"
+              render={({ field: { name, onChange, value, disabled } }) => {
+                return (
+                  <Popover>
+                    <PopoverTrigger asChild id="date-picker">
+                      <Button
+                        variant={'outline'}
+                        className={cn(
+                          'h-8 w-[220px] justify-start text-left font-normal',
+                          !date && 'text-muted-foreground',
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, 'PPP') : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        id={name}
+                        mode="single"
+                        selected={value}
+                        onSelect={onChange}
+                        disabled={disabled}
+                        required
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                )
+              }}
+            />
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -193,34 +214,41 @@ export function NewTransactionForm() {
 
         <div className="flex items-center gap-1.5">
           <Label className="text-muted-foreground">Status</Label>
-          <div className="flex w-full gap-3">
-            <Button
-              variant={'outline'}
-              size={'xs'}
-              className={cn(
-                'w-full',
-                status === 'income' &&
-                  'bg-green-600 text-white hover:bg-green-600 hover:text-white',
-              )}
-              onClick={() => setStatus('income')}
-            >
-              <ArrowUpCircle className="mr-2 size-4" />
-              Income
-            </Button>
-            <Button
-              variant={'outline'}
-              size={'xs'}
-              className={cn(
-                'w-full',
-                status === 'outcome' &&
-                  'bg-red-500 text-white hover:bg-red-500 hover:text-white',
-              )}
-              onClick={() => setStatus('outcome')}
-            >
-              <ArrowDownCircle className="mr-2 size-4" />
-              Outcome
-            </Button>
-          </div>
+          <Controller
+            control={control}
+            name="status"
+            render={({ field: { name, onChange, value, disabled } }) => {
+              return (
+                <ToggleGroup
+                  id={name}
+                  onValueChange={onChange}
+                  value={value}
+                  disabled={disabled}
+                  type="single"
+                  className="grid w-full grid-cols-2 gap-3"
+                >
+                  <ToggleGroupItem
+                    value="income"
+                    size={'sm'}
+                    variant={'outline'}
+                    className={cn('data-[state=on]:bg-green-600')}
+                  >
+                    <ArrowUpCircle className="mr-2 size-4" />
+                    Income
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="outcome"
+                    size={'sm'}
+                    variant={'outline'}
+                    className={cn('data-[state=on]:bg-red-500')}
+                  >
+                    <ArrowDownCircle className="mr-2 size-4" />
+                    Outcome
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              )
+            }}
+          />
         </div>
 
         <div className="flex gap-3">
@@ -274,9 +302,15 @@ export function NewTransactionForm() {
         </div>
 
         <div>
-          {errors.amount ? (
+          {errors.date ? (
+            <span className="text-sm text-red-400">{errors.date.message}</span>
+          ) : errors.amount ? (
             <span className="text-sm text-red-400">
               {errors.amount.message}
+            </span>
+          ) : errors.status ? (
+            <span className="text-sm text-red-400">
+              {errors.status.message}
             </span>
           ) : errors.category ? (
             <span className="text-sm text-red-400">
