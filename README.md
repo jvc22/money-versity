@@ -1,4 +1,4 @@
-<h1><span style="color:#dc2626">money</span>.versity</h1>
+<h1><span style="color:red">money</span>.versity</h1>
 
 **money.versity** is a finances dashboard management application to register, list, search, and organize and balance all transactions data.
 
