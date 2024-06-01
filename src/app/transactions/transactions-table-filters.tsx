@@ -1,9 +1,12 @@
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { CalendarIcon, Search, X } from 'lucide-react'
-import { useState } from 'react'
-import { DateRange } from 'react-day-picker'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -21,73 +24,184 @@ import {
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 
+import { fetchCategories } from './actions'
+
+interface Categories {
+  id: number
+  value: string
+  label: string
+}
+
+const filtersSchema = z.object({
+  status: z.string().optional(),
+  category: z.string().optional(),
+  date: z.string().optional(),
+})
+
+type FiltersSchema = z.infer<typeof filtersSchema>
+
 export function TransactionsFilters() {
-  const [date, setDate] = useState<DateRange | undefined>()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const params = new URLSearchParams(searchParams.toString())
+  const router = useRouter()
+
+  const [categories, setCategories] = useState<Categories[]>([])
+
+  useEffect(() => {
+    async function getCategories() {
+      try {
+        const data = await fetchCategories()
+
+        setCategories(data)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    getCategories()
+  }, [])
+
+  const status = params.get('status')
+  const category = params.get('category')
+  const date = params.get('date')
+
+  const { handleSubmit, reset, control } = useForm<FiltersSchema>({
+    resolver: zodResolver(filtersSchema),
+    defaultValues: {
+      status: status ?? '',
+      category: category ?? '',
+      date: date ?? '',
+    },
+  })
+
+  function handleFilter(formData: FiltersSchema) {
+    const status = formData.status?.trim()
+    const category = formData.category?.trim()
+    const date = formData.date
+
+    status ? params.set('status', status) : params.delete('status')
+    category ? params.set('category', category) : params.delete('category')
+    date ? params.set('date', date) : params.delete('date')
+
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
+  function handleCleanFilters() {
+    params.delete('status')
+    params.delete('category')
+    params.delete('date')
+
+    reset({
+      status: '',
+      category: '',
+      date: '',
+    })
+
+    router.push(pathname)
+  }
+
+  const hasAnyFilter = !!status || !!category || !!date
 
   return (
-    <form className="flex items-center gap-2">
+    <form
+      onSubmit={handleSubmit(handleFilter)}
+      className="flex items-center gap-2"
+    >
       <span className="text-sm font-semibold">Filters</span>
 
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            id="date"
-            variant={'outline'}
-            className={cn(
-              'h-8 w-[320px] justify-start text-left font-normal',
-              !date && 'text-muted-foreground',
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, 'LLL dd, y')} -{' '}
-                  {format(date.to, 'LLL dd, y')}
-                </>
-              ) : (
-                format(date.from, 'LLL dd, y')
-              )
-            ) : (
-              <span>Pick a date range</span>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            initialFocus
-            mode="range"
-            defaultMonth={new Date()}
-            selected={date}
-            onSelect={setDate}
-            numberOfMonths={2}
-          />
-        </PopoverContent>
-      </Popover>
+      <Controller
+        name="date"
+        control={control}
+        render={({ field: { name, onChange, value, disabled } }) => {
+          return (
+            <Popover>
+              <PopoverTrigger asChild id="date-picker">
+                <Button
+                  variant={'outline'}
+                  className={cn(
+                    'h-8 w-[220px] justify-start text-left font-normal',
+                    !value && 'text-muted-foreground',
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {value ? format(value, 'PPP') : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  id={name}
+                  mode="single"
+                  selected={value ? new Date(value) : undefined}
+                  onSelect={(value) => onChange(value?.toISOString())}
+                  disabled={disabled}
+                  numberOfMonths={2}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          )
+        }}
+      />
 
-      <Select name="status" defaultValue="all">
-        <SelectTrigger className="h-8 w-[120px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All status</SelectItem>
-          <SelectItem value="income">Income</SelectItem>
-          <SelectItem value="outcome">Outcome</SelectItem>
-        </SelectContent>
-      </Select>
+      <Controller
+        control={control}
+        name="status"
+        render={({ field: { name, onChange, value, disabled } }) => {
+          return (
+            <Select
+              name={name}
+              onValueChange={onChange}
+              value={value}
+              disabled={disabled}
+            >
+              <SelectTrigger className="h-8 w-[120px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="income">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-green-500" />
+                    <span>Income</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="outcome">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-red-500" />
+                    <span>Outcome</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          )
+        }}
+      />
 
-      <Select name="category" defaultValue="all">
-        <SelectTrigger className="h-8 w-[160px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All categories</SelectItem>
-          <SelectItem value="food">Food</SelectItem>
-          <SelectItem value="groceries">Groceries</SelectItem>
-          <SelectItem value="transport">Transport</SelectItem>
-          <SelectItem value="salary">Salary</SelectItem>
-        </SelectContent>
-      </Select>
+      <Controller
+        control={control}
+        name="category"
+        render={({ field: { name, onChange, value, disabled } }) => {
+          return (
+            <Select
+              name={name}
+              onValueChange={onChange}
+              value={value}
+              disabled={disabled}
+            >
+              <SelectTrigger className="h-8 w-[160px]">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.value}>
+                    {category.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )
+        }}
+      />
 
       <div className="ml-auto flex gap-2">
         <Button type="submit" variant={'secondary'} size={'xs'}>
@@ -95,7 +209,13 @@ export function TransactionsFilters() {
           Filter results
         </Button>
 
-        <Button type="button" variant={'outline'} size={'xs'}>
+        <Button
+          type="button"
+          onClick={handleCleanFilters}
+          disabled={!hasAnyFilter}
+          variant={'outline'}
+          size={'xs'}
+        >
           <X className="mr-2 size-4" />
           Clean filters
         </Button>
