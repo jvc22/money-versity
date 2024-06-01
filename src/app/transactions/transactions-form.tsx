@@ -71,7 +71,9 @@ const createTransactionFormSchema = z
       const newVal = stringValue.replace(',', '.')
 
       return {
+        data: data.date,
         amount: parseFloat(newVal),
+        status: data.status,
         category: data.category,
         description: data.description,
       }
@@ -131,6 +133,7 @@ export function NewTransactionForm() {
           date: new Date(),
           amount: NaN,
           status: 'income',
+          category: '',
           description: '',
         })
       }
