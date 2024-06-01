@@ -14,6 +14,7 @@ npm install
 ```bash
 npm run dev
 ```
+5. Create an `.env` file with `API_BASE_URL` variale.
 
 ## Functional requirements
 
