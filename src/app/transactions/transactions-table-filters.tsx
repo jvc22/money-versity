@@ -159,8 +159,18 @@ export function TransactionsFilters() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="income">Income</SelectItem>
-                <SelectItem value="outcome">Outcome</SelectItem>
+                <SelectItem value="income">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-green-500" />
+                    <span>Income</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="outcome">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-red-500" />
+                    <span>Outcome</span>
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           )
