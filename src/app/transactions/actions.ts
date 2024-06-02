@@ -1,34 +1,60 @@
 'use server'
 
+import { revalidateTag } from 'next/cache'
+import { z } from 'zod'
+
 import { env } from '@/lib/env'
 
 import { CreateTransactionFormData } from './transactions-form'
 
-export async function fetchCategories() {
-  const response = await fetch(`${env.API_BASE_URL}/categories`, {
-    next: {
-      tags: ['categories'],
-    },
-  })
-
-  const data = await response.json()
-
-  return data
-}
-
 export async function createTransaction(data: CreateTransactionFormData) {
+  const newTransaction = {
+    createdAt: data.date,
+    amount: Math.round(data.amount * 100) / 100,
+    status: data.status,
+    category: data.category,
+    description: data.description,
+  }
+
   const response = await fetch(`${env.API_BASE_URL}/transactions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(newTransaction),
   })
 
-  const responseData = await response.json()
+  revalidateTag('transactions')
 
   return {
     status: response.status,
-    data: responseData,
   }
+}
+
+export async function fetchTransactions() {
+  const responseSchema = z.array(
+    z.object({
+      id: z.string(),
+      createdAt: z.string(),
+      amount: z.number(),
+      status: z.enum(['income', 'outcome']),
+      category: z.string(),
+      description: z.string(),
+    }),
+  )
+
+  const response = await fetch(`${env.API_BASE_URL}/transactions`, {
+    next: {
+      tags: ['transactions'],
+    },
+  })
+
+  const data = await response.json()
+
+  const safeResponse = responseSchema.safeParse(data)
+  if (!safeResponse.success) {
+    console.error(safeResponse.error.format)
+  }
+
+  return safeResponse.data || []
 }

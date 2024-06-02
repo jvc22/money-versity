@@ -37,9 +37,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { api } from '@/lib/axios'
 import { cn } from '@/lib/utils'
 
-import { createTransaction, fetchCategories } from './actions'
+import { createTransaction } from './actions'
 
 interface Categories {
   id: number
@@ -109,9 +110,11 @@ export function NewTransactionForm() {
   useEffect(() => {
     async function getCategories() {
       try {
-        const data = await fetchCategories()
+        const response = await api.get('/categories')
 
-        setCategories(data)
+        if (response.status === 200) {
+          setCategories(response.data)
+        }
       } catch (err) {
         console.error(err)
       }
