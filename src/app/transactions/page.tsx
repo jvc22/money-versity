@@ -17,8 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { api } from '@/lib/axios'
 
-import { fetchTransactions } from './actions'
 import { NewTransactionForm } from './transactions-form'
 import { TransactionsFilters } from './transactions-table-filters'
 import { TransactionsTableRow } from './transactions-table-row'
@@ -40,9 +40,11 @@ export default function Transactions() {
   useEffect(() => {
     async function getTransactions() {
       try {
-        const data = await fetchTransactions()
+        const response = await api.get('/transactions')
 
-        setTransactions(data)
+        if (response.status === 200) {
+          setTransactions(response.data)
+        }
       } catch (err) {
         console.error(err)
       }
