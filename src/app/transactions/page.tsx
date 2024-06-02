@@ -6,7 +6,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
@@ -18,12 +18,38 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
+import { fetchTransactions } from './actions'
 import { NewTransactionForm } from './transactions-form'
 import { TransactionsFilters } from './transactions-table-filters'
 import { TransactionsTableRow } from './transactions-table-row'
 
+interface Transaction {
+  id: string
+  createdAt: string
+  amount: number
+  status: 'income' | 'outcome'
+  category: string
+  description: string
+}
+
 export default function Transactions() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+
+  useEffect(() => {
+    async function getTransactions() {
+      try {
+        const data = await fetchTransactions()
+
+        setTransactions(data)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    getTransactions()
+  }, [])
 
   return (
     <div className="flex flex-col gap-6">
@@ -56,8 +82,14 @@ export default function Transactions() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Array.from({ length: 10 }).map((_, index) => (
-                <TransactionsTableRow key={index} />
+              {transactions.map((transaction) => (
+                <TransactionsTableRow
+                  key={transaction.id}
+                  createdAt={transaction.createdAt}
+                  amount={transaction.amount}
+                  status={transaction.status}
+                  category={transaction.category}
+                />
               ))}
             </TableBody>
           </Table>
