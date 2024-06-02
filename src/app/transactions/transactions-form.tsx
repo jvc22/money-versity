@@ -208,7 +208,7 @@ export function NewTransactionForm() {
                 placeholder="100.00"
                 type="number"
                 autoComplete="off"
-                step="0.01"
+                step="0.001"
                 className="h-8 rounded-l-none border-l-0 text-end"
               />
             </div>
