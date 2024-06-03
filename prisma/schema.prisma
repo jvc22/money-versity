@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Categories {
+  id           Int            @id @default(autoincrement())
+  value        String
+  label        String
+  transactions Transactions[]
+
+  @@map("categories")
+}
+
+enum Status {
+  income
+  outcome
+}
+
+model Transactions {
+  id          String   @id @default(cuid())
+  amount      Float
+  status      Status
+  description String
+  categoryId  Int
+  category    Categories @relation(fields: [categoryId], references: [id])
+
+  @@map("transactions")
+}

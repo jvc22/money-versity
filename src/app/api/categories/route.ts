@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 
-import { env } from '@/lib/env'
+import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   const categoriesSchema = z.array(
@@ -12,9 +12,7 @@ export async function GET() {
     }),
   )
 
-  const response = await fetch(`${env.API_BASE_URL}/categories`)
-
-  const categories = await response.json()
+  const categories = await prisma.categories.findMany()
 
   const safeResponse = categoriesSchema.safeParse(categories)
   if (!safeResponse.success) {
