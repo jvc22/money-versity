@@ -40,8 +40,6 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { api } from '@/lib/axios'
 import { cn } from '@/lib/utils'
 
-import { createTransaction } from './actions'
-
 interface Categories {
   id: number
   value: string
@@ -127,7 +125,9 @@ export function NewTransactionForm() {
     formData: CreateTransactionFormData,
   ) {
     try {
-      const response = await createTransaction(formData)
+      const response = await api.post('/transactions', {
+        formData,
+      })
 
       if (response.status === 201) {
         toast.success('Transaction created successfully.')
