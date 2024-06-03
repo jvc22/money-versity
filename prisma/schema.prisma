@@ -7,11 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Category {
+model Categories {
   id           Int            @id @default(autoincrement())
   value        String
   label        String
-  transactions Transaction[]
+  transactions Transactions[]
 
   @@map("categories")
 }
@@ -21,13 +21,13 @@ enum Status {
   outcome
 }
 
-model Transaction {
+model Transactions {
   id          String   @id @default(cuid())
   amount      Float
   status      Status
   description String
   categoryId  Int
-  category    Category @relation(fields: [categoryId], references: [id])
+  category    Categories @relation(fields: [categoryId], references: [id])
 
   @@map("transactions")
 }
