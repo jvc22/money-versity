@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 
-import { env } from '@/lib/env'
+import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   const responseSchema = z.array(
@@ -15,14 +15,12 @@ export async function GET() {
     }),
   )
 
-  const response = await fetch(`${env.API_BASE_URL}/transactions`)
-
-  const transactions = await response.json()
+  const transactions = await prisma.transactions.findMany()
 
   const safeResponse = responseSchema.safeParse(transactions)
   if (!safeResponse.success) {
     console.error(safeResponse.error.format)
-    return
+    throw new Error()
   }
 
   return NextResponse.json(safeResponse.data, { status: 200 })
@@ -53,13 +51,13 @@ export async function POST(request: Request) {
     description: formData.description,
   }
 
-  const response = await fetch(`${env.API_BASE_URL}/transactions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(newTransaction),
+  const transaction = await prisma.transactions.create({
+    data: newTransaction,
   })
 
-  return NextResponse.json(response.body, { status: response.status })
+  if (transaction) {
+    return NextResponse.json(transaction.id, { status: 201 })
+  }
+
+  return NextResponse.json({}, { status: 400 })
 }
