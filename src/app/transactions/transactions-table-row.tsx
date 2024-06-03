@@ -1,13 +1,27 @@
+import { format } from 'date-fns'
 import { Pencil, Search, X } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 
 import { TransactionDetails } from './transactions-details'
 
-export function TransactionsTableRow() {
+interface TransactionsTableRowProps {
+  createdAt: string
+  amount: number
+  status: 'income' | 'outcome'
+  category: string
+}
+
+export function TransactionsTableRow({
+  createdAt,
+  amount,
+  status,
+  category,
+}: TransactionsTableRowProps) {
   return (
     <TableRow>
       <TableCell>
@@ -21,16 +35,25 @@ export function TransactionsTableRow() {
           <TransactionDetails />
         </Dialog>
       </TableCell>
-      <TableCell className="font-medium">R$ 333,33</TableCell>
-      <TableCell>Sunday, October 22th, 2023</TableCell>
+      <TableCell className="font-medium">R$ {amount}</TableCell>
+      <TableCell>{format(new Date(createdAt), 'PPPP')}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
-          <span className="size-2 rounded-full bg-green-500" />
-          <span className="font-medium text-muted-foreground">Income</span>
+          <span
+            className={cn(
+              'size-2 rounded-full',
+              status === 'income' ? 'bg-green-500' : 'bg-red-500',
+            )}
+          />
+          <span className="font-medium text-muted-foreground">
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </span>
         </div>
       </TableCell>
       <TableCell>
-        <Badge variant={'secondary'}>Church</Badge>
+        <Badge variant={'secondary'}>
+          {category.charAt(0).toUpperCase() + category.slice(1)}
+        </Badge>
       </TableCell>
       <TableCell>
         <Button variant={'ghost'} size={'xs'}>

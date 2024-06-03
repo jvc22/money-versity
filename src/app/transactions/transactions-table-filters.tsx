@@ -22,9 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { api } from '@/lib/axios'
 import { cn } from '@/lib/utils'
-
-import { fetchCategories } from './actions'
 
 interface Categories {
   id: number
@@ -51,9 +50,11 @@ export function TransactionsFilters() {
   useEffect(() => {
     async function getCategories() {
       try {
-        const data = await fetchCategories()
+        const response = await api.get('/categories')
 
-        setCategories(data)
+        if (response.status === 200) {
+          setCategories(response.data)
+        }
       } catch (err) {
         console.error(err)
       }
