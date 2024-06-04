@@ -11,6 +11,7 @@ model Categories {
   id           Int            @id @default(autoincrement())
   value        String
   label        String
+  createdAt    DateTime       @default(now())
   transactions Transactions[]
 
   @@map("categories")
