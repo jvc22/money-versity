@@ -10,10 +10,14 @@ import { cn } from '@/lib/utils'
 import { TransactionDetails } from './transactions-details'
 
 interface TransactionsTableRowProps {
-  createdAt: string
+  createdAt: Date
   amount: number
   status: 'income' | 'outcome'
-  category: string
+  category: {
+    id: number
+    value: string
+    label: string
+  }
 }
 
 export function TransactionsTableRow({
@@ -51,9 +55,7 @@ export function TransactionsTableRow({
         </div>
       </TableCell>
       <TableCell>
-        <Badge variant={'secondary'}>
-          {category.charAt(0).toUpperCase() + category.slice(1)}
-        </Badge>
+        <Badge variant={'secondary'}>{category.label}</Badge>
       </TableCell>
       <TableCell>
         <Button variant={'ghost'} size={'xs'}>

@@ -4,9 +4,28 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  const transactions = await prisma.transactions.findMany()
+  const transactions = await prisma.transactions.findMany({
+    select: {
+      id: true,
+      createdAt: true,
+      amount: true,
+      status: true,
+      category: {
+        select: {
+          id: true,
+          value: true,
+          label: true,
+        },
+      },
+      description: true,
+    },
+  })
 
-  return NextResponse.json(transactions, { status: 200 })
+  if (transactions) {
+    return NextResponse.json(transactions, { status: 200 })
+  }
+
+  return NextResponse.json({}, { status: 404 })
 }
 
 export async function POST(request: Request) {
