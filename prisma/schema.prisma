@@ -22,10 +22,11 @@ enum Status {
 }
 
 model Transactions {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   amount      Float
   status      Status
   description String
+  createdAt   DateTime
   categoryId  Int
   category    Categories @relation(fields: [categoryId], references: [id])
 
