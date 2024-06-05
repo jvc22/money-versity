@@ -57,6 +57,12 @@ export function TransactionsCategoryForm() {
     }
   }
 
+  function handleCleanForm() {
+    reset({
+      label: '',
+    })
+  }
+
   return (
     <PopoverContent align="start">
       <form
@@ -77,7 +83,12 @@ export function TransactionsCategoryForm() {
 
         <div className="grid grid-cols-2 gap-2">
           <PopoverClose asChild>
-            <Button size={'xs'} variant={'outline'} type="reset">
+            <Button
+              size={'xs'}
+              variant={'outline'}
+              type="reset"
+              onClick={handleCleanForm}
+            >
               Cancel
             </Button>
           </PopoverClose>
