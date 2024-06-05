@@ -29,10 +29,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const { formData } = await request.json()
+  const formData = await request.json()
 
   const bodySchema = z.object({
-    date: z.date(),
+    date: z.string(),
     amount: z.number(),
     status: z.enum(['income', 'outcome']),
     categoryId: z.number(),
@@ -41,12 +41,12 @@ export async function POST(request: Request) {
 
   const safeBody = bodySchema.safeParse(formData)
   if (!safeBody.success) {
-    console.error(safeBody.error.format)
+    console.error(safeBody.error)
     throw new Error()
   }
 
   const newTransaction = {
-    createdAt: safeBody.data.date,
+    createdAt: new Date(safeBody.data.date),
     amount: Math.round(safeBody.data.amount * 100) / 100,
     status: safeBody.data.status,
     categoryId: safeBody.data.categoryId,

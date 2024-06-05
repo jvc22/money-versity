@@ -130,7 +130,7 @@ export function NewTransactionForm() {
       )?.id
 
       const response = await api.post('/transactions', {
-        date: formData.date,
+        date: formData.date.toDateString(),
         amount: formData.amount,
         status: formData.status,
         categoryId,
