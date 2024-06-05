@@ -125,8 +125,16 @@ export function NewTransactionForm() {
     formData: CreateTransactionFormData,
   ) {
     try {
+      const categoryId = categories.find(
+        (category) => category.value === formData.category,
+      )?.id
+
       const response = await api.post('/transactions', {
-        formData,
+        date: formData.date.toDateString(),
+        amount: formData.amount,
+        status: formData.status,
+        categoryId,
+        description: formData.description,
       })
 
       if (response.status === 201) {

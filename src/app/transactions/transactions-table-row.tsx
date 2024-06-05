@@ -6,14 +6,19 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
+import { priceFormatter } from '@/utils/formatter'
 
 import { TransactionDetails } from './transactions-details'
 
 interface TransactionsTableRowProps {
-  createdAt: string
+  createdAt: Date
   amount: number
   status: 'income' | 'outcome'
-  category: string
+  category: {
+    id: number
+    value: string
+    label: string
+  }
 }
 
 export function TransactionsTableRow({
@@ -35,7 +40,9 @@ export function TransactionsTableRow({
           <TransactionDetails />
         </Dialog>
       </TableCell>
-      <TableCell className="font-medium">R$ {amount}</TableCell>
+      <TableCell className="font-medium">
+        {priceFormatter.format(amount)}
+      </TableCell>
       <TableCell>{format(new Date(createdAt), 'PPPP')}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
@@ -51,9 +58,7 @@ export function TransactionsTableRow({
         </div>
       </TableCell>
       <TableCell>
-        <Badge variant={'secondary'}>
-          {category.charAt(0).toUpperCase() + category.slice(1)}
-        </Badge>
+        <Badge variant={'secondary'}>{category.label}</Badge>
       </TableCell>
       <TableCell>
         <Button variant={'ghost'} size={'xs'}>
