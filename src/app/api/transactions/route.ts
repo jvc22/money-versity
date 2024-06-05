@@ -4,51 +4,53 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  const responseSchema = z.array(
-    z.object({
-      id: z.string(),
-      createdAt: z.string(),
-      amount: z.number(),
-      status: z.enum(['income', 'outcome']),
-      category: z.string(),
-      description: z.string(),
-    }),
-  )
+  const transactions = await prisma.transactions.findMany({
+    select: {
+      id: true,
+      createdAt: true,
+      amount: true,
+      status: true,
+      category: {
+        select: {
+          id: true,
+          value: true,
+          label: true,
+        },
+      },
+      description: true,
+    },
+  })
 
-  const transactions = await prisma.transactions.findMany()
-
-  const safeResponse = responseSchema.safeParse(transactions)
-  if (!safeResponse.success) {
-    console.error(safeResponse.error.format)
-    throw new Error()
+  if (transactions) {
+    return NextResponse.json(transactions, { status: 200 })
   }
 
-  return NextResponse.json(safeResponse.data, { status: 200 })
+  return NextResponse.json({}, { status: 404 })
 }
 
 export async function POST(request: Request) {
-  const { formData } = await request.json()
+  const formData = await request.json()
 
   const bodySchema = z.object({
     date: z.string(),
     amount: z.number(),
     status: z.enum(['income', 'outcome']),
-    category: z.string(),
+    categoryId: z.number(),
     description: z.string(),
   })
 
   const safeBody = bodySchema.safeParse(formData)
   if (!safeBody.success) {
-    console.error(safeBody.error.format)
+    console.error(safeBody.error)
     throw new Error()
   }
 
   const newTransaction = {
-    createdAt: formData.date,
-    amount: Math.round(formData.amount * 100) / 100,
-    status: formData.status,
-    category: formData.category,
-    description: formData.description,
+    createdAt: new Date(safeBody.data.date),
+    amount: Math.round(safeBody.data.amount * 100) / 100,
+    status: safeBody.data.status,
+    categoryId: safeBody.data.categoryId,
+    description: safeBody.data.description,
   }
 
   const transaction = await prisma.transactions.create({

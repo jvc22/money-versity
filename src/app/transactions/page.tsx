@@ -25,10 +25,14 @@ import { TransactionsTableRow } from './transactions-table-row'
 
 interface Transaction {
   id: string
-  createdAt: string
+  createdAt: Date
   amount: number
   status: 'income' | 'outcome'
-  category: string
+  category: {
+    id: number
+    value: string
+    label: string
+  }
   description: string
 }
 
