@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
+import { priceFormatter } from '@/utils/formatter'
 
 import { TransactionDetails } from './transactions-details'
 
@@ -39,7 +40,9 @@ export function TransactionsTableRow({
           <TransactionDetails />
         </Dialog>
       </TableCell>
-      <TableCell className="font-medium">R$ {amount}</TableCell>
+      <TableCell className="font-medium">
+        {priceFormatter.format(amount)}
+      </TableCell>
       <TableCell>{format(new Date(createdAt), 'PPPP')}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
