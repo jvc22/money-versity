@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { CalendarIcon, Search, X } from 'lucide-react'
+import { CalendarIcon, Plus, Search, X } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -24,6 +24,8 @@ import {
 } from '@/components/ui/select'
 import { api } from '@/lib/axios'
 import { cn } from '@/lib/utils'
+
+import { TransactionsCategoryForm } from './transactions-category-form'
 
 interface Categories {
   id: number
@@ -178,31 +180,42 @@ export function TransactionsFilters() {
         }}
       />
 
-      <Controller
-        control={control}
-        name="category"
-        render={({ field: { name, onChange, value, disabled } }) => {
-          return (
-            <Select
-              name={name}
-              onValueChange={onChange}
-              value={value}
-              disabled={disabled}
-            >
-              <SelectTrigger className="h-8 w-[160px]">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.value}>
-                    {category.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )
-        }}
-      />
+      <div className="flex items-center">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button size={'xs'} variant={'outline'} className="rounded-e-none">
+              <Plus className="size-4" />
+            </Button>
+          </PopoverTrigger>
+
+          <TransactionsCategoryForm />
+        </Popover>
+        <Controller
+          control={control}
+          name="category"
+          render={({ field: { name, onChange, value, disabled } }) => {
+            return (
+              <Select
+                name={name}
+                onValueChange={onChange}
+                value={value}
+                disabled={disabled}
+              >
+                <SelectTrigger className="h-8 w-[160px] rounded-s-none border-s-0">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.value}>
+                      {category.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )
+          }}
+        />
+      </div>
 
       <div className="ml-auto flex gap-2">
         <Button type="submit" variant={'secondary'} size={'xs'}>
