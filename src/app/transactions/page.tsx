@@ -1,12 +1,13 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
@@ -39,23 +40,14 @@ interface Transaction {
 export default function Transactions() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const { data: transactions } = useQuery<Transaction[]>({
+    queryKey: ['transactions'],
+    queryFn: async () => {
+      const response = await api.get('/transactions')
 
-  useEffect(() => {
-    async function getTransactions() {
-      try {
-        const response = await api.get('/transactions')
-
-        if (response.status === 200) {
-          setTransactions(response.data)
-        }
-      } catch (err) {
-        console.error(err)
-      }
-    }
-
-    getTransactions()
-  }, [])
+      return response.data
+    },
+  })
 
   return (
     <div className="flex flex-col gap-6">
@@ -88,7 +80,7 @@ export default function Transactions() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {transactions.map((transaction) => (
+              {transactions?.map((transaction) => (
                 <TransactionsTableRow
                   key={transaction.id}
                   createdAt={transaction.createdAt}
