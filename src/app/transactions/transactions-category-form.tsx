@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PopoverClose } from '@radix-ui/react-popover'
+import { useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -34,6 +35,8 @@ export function TransactionsCategoryForm() {
     resolver: zodResolver(createCategoryFormSchema),
   })
 
+  const queryClient = useQueryClient()
+
   async function handleCreateNewCategory(formData: CreateCategoryFormData) {
     try {
       const value = formData.label.toLocaleLowerCase()
@@ -47,6 +50,10 @@ export function TransactionsCategoryForm() {
 
       if (response.status === 201) {
         toast.success('Category created successfully.')
+
+        queryClient.invalidateQueries({
+          queryKey: ['categories'],
+        })
 
         reset({
           label: '',

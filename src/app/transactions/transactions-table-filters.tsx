@@ -1,10 +1,10 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { CalendarIcon, Plus, Search, X } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -27,7 +27,7 @@ import { cn } from '@/lib/utils'
 
 import { TransactionsCategoryForm } from './transactions-category-form'
 
-interface Categories {
+interface Category {
   id: number
   value: string
   label: string
@@ -47,23 +47,14 @@ export function TransactionsFilters() {
   const params = new URLSearchParams(searchParams.toString())
   const router = useRouter()
 
-  const [categories, setCategories] = useState<Categories[]>([])
+  const { data: categories } = useQuery<Category[]>({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const response = await api.get('/categories')
 
-  useEffect(() => {
-    async function getCategories() {
-      try {
-        const response = await api.get('/categories')
-
-        if (response.status === 200) {
-          setCategories(response.data)
-        }
-      } catch (err) {
-        console.error(err)
-      }
-    }
-
-    getCategories()
-  }, [])
+      return response.data
+    },
+  })
 
   const status = params.get('status')
   const category = params.get('category')
@@ -205,7 +196,7 @@ export function TransactionsFilters() {
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((category) => (
+                  {categories?.map((category) => (
                     <SelectItem key={category.id} value={category.value}>
                       {category.label}
                     </SelectItem>
