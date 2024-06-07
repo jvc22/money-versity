@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import {
   ArrowDownCircle,
@@ -8,7 +9,6 @@ import {
   CalendarIcon,
   Type,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -40,7 +40,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { api } from '@/lib/axios'
 import { cn } from '@/lib/utils'
 
-interface Categories {
+interface Category {
   id: number
   value: string
   label: string
@@ -86,8 +86,6 @@ export type CreateTransactionFormData = z.infer<
 >
 
 export function NewTransactionForm() {
-  const [categories, setCategories] = useState<Categories[]>([])
-
   const {
     register,
     handleSubmit,
@@ -105,27 +103,22 @@ export function NewTransactionForm() {
 
   const date = watch('date')
 
-  useEffect(() => {
-    async function getCategories() {
-      try {
-        const response = await api.get('/categories')
+  const { data: categories } = useQuery<Category[]>({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const response = await api.get('/categories')
 
-        if (response.status === 200) {
-          setCategories(response.data)
-        }
-      } catch (err) {
-        console.error(err)
-      }
-    }
+      return response.data
+    },
+  })
 
-    getCategories()
-  }, [])
+  const queryClient = useQueryClient()
 
   async function handleCreateNewTransaction(
     formData: CreateTransactionFormData,
   ) {
     try {
-      const categoryId = categories.find(
+      const categoryId = categories?.find(
         (category) => category.value === formData.category,
       )?.id
 
@@ -139,6 +132,10 @@ export function NewTransactionForm() {
 
       if (response.status === 201) {
         toast.success('Transaction created successfully.')
+
+        queryClient.invalidateQueries({
+          queryKey: ['transactions'],
+        })
 
         reset({
           date: new Date(),
@@ -285,7 +282,7 @@ export function NewTransactionForm() {
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map((category) => (
+                      {categories?.map((category) => (
                         <SelectItem key={category.id} value={category.value}>
                           {category.label}
                         </SelectItem>
