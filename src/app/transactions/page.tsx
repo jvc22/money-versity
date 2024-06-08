@@ -83,6 +83,7 @@ export default function Transactions() {
               {transactions?.map((transaction) => (
                 <TransactionsTableRow
                   key={transaction.id}
+                  id={transaction.id}
                   createdAt={transaction.createdAt}
                   amount={transaction.amount}
                   status={transaction.status}
