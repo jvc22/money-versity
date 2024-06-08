@@ -47,6 +47,47 @@ export async function GET(request: Request, params: RouteParams) {
   return NextResponse.json({}, { status: 404 })
 }
 
+export async function PUT(request: Request, params: RouteParams) {
+  const transactionId = parseParams(params)
+
+  const formData = await request.json()
+
+  const bodySchema = z.object({
+    date: z.string(),
+    amount: z.number(),
+    status: z.enum(['income', 'outcome']),
+    categoryId: z.number(),
+    description: z.string(),
+  })
+
+  const safeBody = bodySchema.safeParse(formData)
+  if (!safeBody.success) {
+    console.error(safeBody.error)
+    throw new Error()
+  }
+
+  const editedTransaction = {
+    createdAtTz: new Date(safeBody.data.date),
+    amount: Math.round(safeBody.data.amount * 100) / 100,
+    status: safeBody.data.status,
+    categoryId: safeBody.data.categoryId,
+    description: safeBody.data.description,
+  }
+
+  const updatedTransaction = await prisma.transactions.update({
+    where: {
+      id: transactionId,
+    },
+    data: editedTransaction,
+  })
+
+  if (updatedTransaction) {
+    return NextResponse.json(updatedTransaction.id, { status: 200 })
+  }
+
+  return NextResponse.json({}, { status: 404 })
+}
+
 export async function DELETE(request: Request, params: RouteParams) {
   const transactionId = parseParams(params)
 

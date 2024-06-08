@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 
 import { Badge } from '@/components/ui/badge'
@@ -9,38 +8,17 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
-import { api } from '@/lib/axios'
+import { useTransaction } from '@/hooks/transactions'
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
 
 interface TransactionDetailsProps {
   id: string
-  isOpen: boolean
 }
 
-interface Transaction {
-  id: string
-  createdAtTz: Date
-  amount: number
-  status: 'income' | 'outcome'
-  category: {
-    id: number
-    value: string
-    label: string
-    createdAt: Date
-  }
-  description: string
-}
-
-export function TransactionDetails({ id, isOpen }: TransactionDetailsProps) {
-  const { data: transaction } = useQuery<Transaction>({
-    queryKey: ['transaction-details', id],
-    queryFn: async () => {
-      const response = await api.get(`/transactions/${id}`)
-
-      return response.data
-    },
-    enabled: isOpen,
+export function TransactionDetails({ id }: TransactionDetailsProps) {
+  const transaction = useTransaction({
+    id,
   })
 
   if (!transaction) {

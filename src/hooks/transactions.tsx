@@ -12,6 +12,7 @@ interface Transaction {
     id: number
     value: string
     label: string
+    createdAt: Date
   }
   description: string
 }
@@ -36,4 +37,21 @@ export function useTransactions({ params }: useTransactionsProps) {
   })
 
   return transactions || []
+}
+
+interface useTransactionProps {
+  id: string
+}
+
+export function useTransaction({ id }: useTransactionProps) {
+  const { data: transaction } = useQuery<Transaction>({
+    queryKey: ['transaction', id],
+    queryFn: async () => {
+      const response = await api.get(`/transactions/${id}`)
+
+      return response.data
+    },
+  })
+
+  return transaction
 }
