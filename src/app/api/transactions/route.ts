@@ -1,13 +1,25 @@
-import { NextResponse } from 'next/server'
+import { Prisma, Status } from '@prisma/client'
+import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const date = request.nextUrl.searchParams.get('date')
+  const status = request.nextUrl.searchParams.get('status')
+  const category = request.nextUrl.searchParams.get('category')
+
+  const where: Prisma.TransactionsWhereInput = {
+    ...(date && { createdAtTz: new Date(date).toISOString() }),
+    ...(status && { status: status as Status }),
+    ...(category && { category: { value: category } }),
+  }
+
   const transactions = await prisma.transactions.findMany({
+    where,
     select: {
       id: true,
-      createdAt: true,
+      createdAtTz: true,
       amount: true,
       status: true,
       category: {
@@ -18,6 +30,9 @@ export async function GET() {
         },
       },
       description: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
     },
   })
 
@@ -46,7 +61,7 @@ export async function POST(request: Request) {
   }
 
   const newTransaction = {
-    createdAt: new Date(safeBody.data.date),
+    createdAtTz: new Date(safeBody.data.date),
     amount: Math.round(safeBody.data.amount * 100) / 100,
     status: safeBody.data.status,
     categoryId: safeBody.data.categoryId,

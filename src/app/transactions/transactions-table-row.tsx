@@ -1,16 +1,21 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { Pencil, Search, X } from 'lucide-react'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
+import { api } from '@/lib/axios'
 import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
 
 import { TransactionDetails } from './transactions-details'
 
 interface TransactionsTableRowProps {
+  id: string
   createdAt: Date
   amount: number
   status: 'income' | 'outcome'
@@ -22,22 +27,43 @@ interface TransactionsTableRowProps {
 }
 
 export function TransactionsTableRow({
+  id,
   createdAt,
   amount,
   status,
   category,
 }: TransactionsTableRowProps) {
+  const queryClient = useQueryClient()
+
+  async function handleDeleteTransaction() {
+    try {
+      const response = await api.delete(`/transactions/${id}`)
+
+      if (response.status === 200) {
+        queryClient.invalidateQueries({
+          queryKey: ['transactions'],
+        })
+
+        toast.success('Transaction deleted successfully.')
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+
   return (
     <TableRow>
       <TableCell>
-        <Dialog>
+        <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
           <DialogTrigger asChild>
             <Button variant={'outline'} size={'xs'}>
               <Search className="size-3" />
               <span className="sr-only">Transaction details</span>
             </Button>
           </DialogTrigger>
-          <TransactionDetails />
+          <TransactionDetails id={id} isOpen={isDetailsOpen} />
         </Dialog>
       </TableCell>
       <TableCell className="font-medium">
@@ -61,13 +87,13 @@ export function TransactionsTableRow({
         <Badge variant={'secondary'}>{category.label}</Badge>
       </TableCell>
       <TableCell>
-        <Button variant={'ghost'} size={'xs'}>
+        <Button variant={'outline'} size={'xs'}>
           <Pencil className="mr-2 size-3" />
           Edit
         </Button>
       </TableCell>
       <TableCell>
-        <Button variant={'ghost'} size={'xs'}>
+        <Button variant={'ghost'} size={'xs'} onClick={handleDeleteTransaction}>
           <X className="mr-2 size-3" />
           Delete
         </Button>

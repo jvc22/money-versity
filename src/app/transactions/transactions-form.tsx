@@ -44,6 +44,7 @@ interface Category {
   id: number
   value: string
   label: string
+  createdAt: Date
 }
 
 const createTransactionFormSchema = z
@@ -70,7 +71,7 @@ const createTransactionFormSchema = z
       const newVal = stringValue.replace(',', '.')
 
       return {
-        data: data.date,
+        date: data.date,
         amount: parseFloat(newVal),
         status: data.status,
         category: data.category,
