@@ -1,12 +1,13 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -19,6 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { api } from '@/lib/axios'
+import { createUrlWithParams } from '@/utils/url-params'
 
 import { NewTransactionForm } from './transactions-form'
 import { TransactionsFilters } from './transactions-table-filters'
@@ -38,15 +40,30 @@ interface Transaction {
 }
 
 export default function Transactions() {
+  const searchParams = useSearchParams()
+  const params = new URLSearchParams(searchParams.toString())
+
+  const status = params.get('status')
+  const category = params.get('category')
+  const date = params.get('date')
+
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const { data: transactions } = useQuery<Transaction[]>({
-    queryKey: ['transactions'],
+    queryKey: ['transactions', date, status, category],
     queryFn: async () => {
-      const response = await api.get('/transactions')
+      const params = {
+        date,
+        status,
+        category,
+      }
+      const urlWithParams = createUrlWithParams('/transactions', params)
+
+      const response = await api.get(urlWithParams)
 
       return response.data
     },
+    placeholderData: keepPreviousData,
   })
 
   return (

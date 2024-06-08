@@ -1,10 +1,22 @@
-import { NextResponse } from 'next/server'
+import { Prisma, Status } from '@prisma/client'
+import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const date = request.nextUrl.searchParams.get('date')
+  const status = request.nextUrl.searchParams.get('status')
+  const category = request.nextUrl.searchParams.get('category')
+
+  const where: Prisma.TransactionsWhereInput = {
+    ...(date && { createdAtTz: new Date(date).toISOString() }),
+    ...(status && { status: status as Status }),
+    ...(category && { category: { value: category } }),
+  }
+
   const transactions = await prisma.transactions.findMany({
+    where,
     select: {
       id: true,
       createdAtTz: true,
