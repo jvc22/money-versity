@@ -7,20 +7,52 @@ type RouteParams = {
   id: string
 }
 
-export async function DELETE(request: Request, params: RouteParams) {
+function parseParams(routeParams: RouteParams) {
   const paramsSchema = z.object({
-    id: z.string().cuid(),
+    params: z.object({
+      id: z.string().cuid(),
+    }),
   })
 
-  const safeParams = paramsSchema.safeParse(params)
+  const safeParams = paramsSchema.safeParse(routeParams)
   if (!safeParams.success) {
     console.error(safeParams.error)
     throw new Error()
   }
 
+  return safeParams.data.params.id
+}
+
+export async function GET(request: Request, params: RouteParams) {
+  const transactionId = parseParams(params)
+
+  const transaction = await prisma.transactions.findUnique({
+    where: {
+      id: transactionId,
+    },
+    select: {
+      id: true,
+      createdAtTz: true,
+      amount: true,
+      status: true,
+      category: true,
+      description: true,
+    },
+  })
+
+  if (transaction) {
+    return NextResponse.json(transaction, { status: 200 })
+  }
+
+  return NextResponse.json({}, { status: 404 })
+}
+
+export async function DELETE(request: Request, params: RouteParams) {
+  const transactionId = parseParams(params)
+
   const transaction = await prisma.transactions.delete({
     where: {
-      id: safeParams.data.id,
+      id: transactionId,
     },
   })
 

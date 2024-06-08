@@ -1,3 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
+import { format } from 'date-fns'
+
 import { Badge } from '@/components/ui/badge'
 import {
   DialogContent,
@@ -6,14 +9,50 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
+import { api } from '@/lib/axios'
+import { priceFormatter } from '@/utils/formatter'
 
-export function TransactionDetails() {
+interface TransactionDetailsProps {
+  id: string
+  isOpen: boolean
+}
+
+interface Transaction {
+  id: string
+  createdAtTz: Date
+  amount: number
+  status: 'income' | 'outcome'
+  category: {
+    id: number
+    value: string
+    label: string
+    createdAt: Date
+  }
+  description: string
+}
+
+export function TransactionDetails({ id, isOpen }: TransactionDetailsProps) {
+  const { data: transaction } = useQuery<Transaction>({
+    queryKey: ['transaction-details', id],
+    queryFn: async () => {
+      const response = await api.get(`/transactions/${id}`)
+
+      return response.data
+    },
+    enabled: isOpen,
+  })
+
+  if (!transaction) {
+    return null
+  }
+
   return (
     <DialogContent>
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-red-500" />
-          Outcome
+          {transaction.status.charAt(0).toUpperCase() +
+            transaction.status.slice(1)}
         </DialogTitle>
         <DialogDescription>Transaction details</DialogDescription>
       </DialogHeader>
@@ -24,26 +63,23 @@ export function TransactionDetails() {
             <TableRow>
               <TableCell className="text-muted-foreground">Date</TableCell>
               <TableCell className="flex justify-end">
-                22th October 2023
+                {format(new Date(transaction.createdAtTz), 'PPPP')}
               </TableCell>
             </TableRow>
 
             <TableRow>
               <TableCell className="text-muted-foreground">Amount</TableCell>
               <TableCell className="flex justify-end font-medium">
-                R$ 333,33
+                {priceFormatter.format(transaction?.amount)}
               </TableCell>
-            </TableRow>
-
-            <TableRow>
-              <TableCell className="text-muted-foreground">Type</TableCell>
-              <TableCell className="flex justify-end">Debit</TableCell>
             </TableRow>
 
             <TableRow>
               <TableCell className="text-muted-foreground">Category</TableCell>
               <TableCell className="flex justify-end">
-                <Badge variant={'secondary'}>Church</Badge>
+                <Badge variant={'secondary'}>
+                  {transaction.category.label}
+                </Badge>
               </TableCell>
             </TableRow>
 
@@ -52,7 +88,7 @@ export function TransactionDetails() {
                 Description
               </TableCell>
               <TableCell className="flex justify-end">
-                Monthly tithe and offering.
+                {transaction.description}
               </TableCell>
             </TableRow>
           </TableBody>

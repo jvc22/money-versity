@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { Pencil, Search, X } from 'lucide-react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
@@ -50,17 +51,19 @@ export function TransactionsTableRow({
     }
   }
 
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+
   return (
     <TableRow>
       <TableCell>
-        <Dialog>
+        <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
           <DialogTrigger asChild>
             <Button variant={'outline'} size={'xs'}>
               <Search className="size-3" />
               <span className="sr-only">Transaction details</span>
             </Button>
           </DialogTrigger>
-          <TransactionDetails />
+          <TransactionDetails id={id} isOpen={isDetailsOpen} />
         </Dialog>
       </TableCell>
       <TableCell className="font-medium">
