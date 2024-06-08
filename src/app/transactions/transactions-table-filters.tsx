@@ -31,6 +31,7 @@ interface Category {
   id: number
   value: string
   label: string
+  createdAt: Date
 }
 
 const filtersSchema = z.object({

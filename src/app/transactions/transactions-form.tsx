@@ -44,6 +44,7 @@ interface Category {
   id: number
   value: string
   label: string
+  createdAt: Date
 }
 
 const createTransactionFormSchema = z
