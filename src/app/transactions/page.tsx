@@ -1,6 +1,5 @@
 'use client'
 
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import {
   ChevronLeft,
   ChevronRight,
@@ -19,52 +18,31 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { api } from '@/lib/axios'
-import { createUrlWithParams } from '@/utils/url-params'
+import { useTransactions } from '@/hooks/transactions'
 
 import { NewTransactionForm } from './transactions-form'
 import { TransactionsFilters } from './transactions-table-filters'
 import { TransactionsTableRow } from './transactions-table-row'
 
-interface Transaction {
-  id: string
-  createdAtTz: Date
-  amount: number
-  status: 'income' | 'outcome'
-  category: {
-    id: number
-    value: string
-    label: string
-  }
-  description: string
-}
-
 export default function Transactions() {
   const searchParams = useSearchParams()
   const params = new URLSearchParams(searchParams.toString())
 
-  const status = params.get('status')
-  const category = params.get('category')
-  const date = params.get('date')
+  const date = params.get('date') ?? ''
+  const status = params.get('status') ?? ''
+  const category = params.get('category') ?? ''
+
+  const paramsObject = {
+    date,
+    status,
+    category,
+  }
+
+  const transactions = useTransactions({
+    params: paramsObject,
+  })
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
-  const { data: transactions } = useQuery<Transaction[]>({
-    queryKey: ['transactions', date, status, category],
-    queryFn: async () => {
-      const params = {
-        date,
-        status,
-        category,
-      }
-      const urlWithParams = createUrlWithParams('/transactions', params)
-
-      const response = await api.get(urlWithParams)
-
-      return response.data
-    },
-    placeholderData: keepPreviousData,
-  })
 
   return (
     <div className="flex flex-col gap-6">
