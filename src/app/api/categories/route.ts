@@ -4,7 +4,11 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  const categories = await prisma.categories.findMany()
+  const categories = await prisma.categories.findMany({
+    orderBy: {
+      label: 'asc',
+    },
+  })
 
   if (categories) {
     return NextResponse.json(categories, { status: 200 })
