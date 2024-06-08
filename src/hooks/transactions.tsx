@@ -12,6 +12,7 @@ interface Transaction {
     id: number
     value: string
     label: string
+    createdAt: Date
   }
   description: string
 }
