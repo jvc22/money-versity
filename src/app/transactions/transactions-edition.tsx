@@ -7,6 +7,7 @@ import {
   CalendarIcon,
   Type,
 } from 'lucide-react'
+import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -36,10 +37,11 @@ import {
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useCategories } from '@/hooks/categories'
+import { useTransaction } from '@/hooks/transactions'
 import { api } from '@/lib/axios'
 import { cn } from '@/lib/utils'
 
-const createTransactionFormSchema = z
+const editTransactionFormSchema = z
   .object({
     date: z.date({ message: 'Please, select a date.' }),
     amount: z
@@ -74,41 +76,50 @@ const createTransactionFormSchema = z
     return data
   })
 
-export type CreateTransactionFormData = z.infer<
-  typeof createTransactionFormSchema
->
+export type EditTransactionFormData = z.infer<typeof editTransactionFormSchema>
 
-export function NewTransactionForm() {
+interface EditTransactionFormProps {
+  id: string
+}
+
+export function EditTransactionForm({ id }: EditTransactionFormProps) {
+  const categories = useCategories()
+  const transaction = useTransaction({
+    id,
+  })
+
   const {
     register,
     handleSubmit,
-    reset,
     control,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<CreateTransactionFormData>({
-    resolver: zodResolver(createTransactionFormSchema),
-    defaultValues: {
-      date: new Date(),
-      status: 'income',
-    },
+  } = useForm<EditTransactionFormData>({
+    resolver: zodResolver(editTransactionFormSchema),
   })
+
+  useEffect(() => {
+    if (transaction) {
+      setValue('date', new Date(transaction.createdAtTz) ?? new Date())
+      setValue('amount', transaction.amount ?? NaN)
+      setValue('status', transaction.status ?? 'income')
+      setValue('category', transaction.category.value ?? '')
+      setValue('description', transaction.description ?? '')
+    }
+  }, [transaction, setValue])
 
   const date = watch('date')
 
-  const categories = useCategories()
-
   const queryClient = useQueryClient()
 
-  async function handleCreateNewTransaction(
-    formData: CreateTransactionFormData,
-  ) {
+  async function handleUpdateTransaction(formData: EditTransactionFormData) {
     try {
       const categoryId = categories?.find(
         (category) => category.value === formData.category,
       )?.id
 
-      const response = await api.post('/transactions', {
+      const response = await api.put(`/transactions/${id}`, {
         date: formData.date.toDateString(),
         amount: formData.amount,
         status: formData.status,
@@ -116,19 +127,14 @@ export function NewTransactionForm() {
         description: formData.description,
       })
 
-      if (response.status === 201) {
-        toast.success('Transaction created successfully.')
+      if (response.status === 200) {
+        toast.success('Transaction updated successfully.')
 
         queryClient.invalidateQueries({
           queryKey: ['transactions'],
         })
-
-        reset({
-          date: new Date(),
-          amount: NaN,
-          status: 'income',
-          category: '',
-          description: '',
+        queryClient.invalidateQueries({
+          queryKey: ['transaction', id],
         })
       }
     } catch (err) {
@@ -137,19 +143,27 @@ export function NewTransactionForm() {
   }
 
   return (
-    <DialogContent className="max-w-md">
+    <DialogContent
+      onOpenAutoFocus={(ev) => ev.preventDefault()}
+      className="max-w-md"
+    >
       <DialogHeader>
-        <DialogTitle>New transaction</DialogTitle>
-        <DialogDescription>Create a new transaction registry</DialogDescription>
+        <DialogTitle>Edit transaction</DialogTitle>
+        <DialogDescription>
+          Update a transaction registry data
+        </DialogDescription>
       </DialogHeader>
 
       <form
-        onSubmit={handleSubmit(handleCreateNewTransaction)}
+        onSubmit={handleSubmit(handleUpdateTransaction)}
         className="space-y-6"
       >
         <div className="flex gap-3">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="date-picker" className="text-muted-foreground">
+            <Label
+              htmlFor="date-picker-edition"
+              className="text-muted-foreground"
+            >
               Date
             </Label>
             <Controller
@@ -158,7 +172,7 @@ export function NewTransactionForm() {
               render={({ field: { name, onChange, value, disabled } }) => {
                 return (
                   <Popover>
-                    <PopoverTrigger asChild id="date-picker">
+                    <PopoverTrigger asChild id="date-picker-edition">
                       <Button
                         variant={'outline'}
                         className={cn(
@@ -339,7 +353,7 @@ export function NewTransactionForm() {
             type="submit"
             className="w-full"
           >
-            Register
+            Update
           </Button>
         </div>
       </form>

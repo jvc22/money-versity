@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { Pencil, Search, X } from 'lucide-react'
-import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
@@ -13,6 +12,7 @@ import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
 
 import { TransactionDetails } from './transactions-details'
+import { EditTransactionForm } from './transactions-edition'
 
 interface TransactionsTableRowProps {
   id: string
@@ -51,19 +51,18 @@ export function TransactionsTableRow({
     }
   }
 
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
-
   return (
     <TableRow>
       <TableCell>
-        <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+        <Dialog>
           <DialogTrigger asChild>
             <Button variant={'outline'} size={'xs'}>
               <Search className="size-3" />
               <span className="sr-only">Transaction details</span>
             </Button>
           </DialogTrigger>
-          <TransactionDetails id={id} isOpen={isDetailsOpen} />
+
+          <TransactionDetails id={id} />
         </Dialog>
       </TableCell>
       <TableCell className="font-medium">
@@ -87,10 +86,16 @@ export function TransactionsTableRow({
         <Badge variant={'secondary'}>{category.label}</Badge>
       </TableCell>
       <TableCell>
-        <Button variant={'outline'} size={'xs'}>
-          <Pencil className="mr-2 size-3" />
-          Edit
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant={'outline'} size={'xs'}>
+              <Pencil className="mr-2 size-3" />
+              Edit
+            </Button>
+          </DialogTrigger>
+
+          <EditTransactionForm id={id} />
+        </Dialog>
       </TableCell>
       <TableCell>
         <Button variant={'ghost'} size={'xs'} onClick={handleDeleteTransaction}>
