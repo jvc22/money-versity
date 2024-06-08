@@ -1,7 +1,4 @@
-'use client'
-
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { CalendarIcon, Plus, Search, X } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -22,17 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { api } from '@/lib/axios'
+import { useCategories } from '@/hooks/categories'
 import { cn } from '@/lib/utils'
 
 import { TransactionsCategoryForm } from './transactions-category-form'
-
-interface Category {
-  id: number
-  value: string
-  label: string
-  createdAt: Date
-}
 
 const filtersSchema = z.object({
   status: z.string().optional(),
@@ -48,18 +38,11 @@ export function TransactionsFilters() {
   const params = new URLSearchParams(searchParams.toString())
   const router = useRouter()
 
-  const { data: categories } = useQuery<Category[]>({
-    queryKey: ['categories'],
-    queryFn: async () => {
-      const response = await api.get('/categories')
-
-      return response.data
-    },
-  })
-
   const status = params.get('status')
   const category = params.get('category')
   const date = params.get('date')
+
+  const categories = useCategories()
 
   const { handleSubmit, reset, control } = useForm<FiltersSchema>({
     resolver: zodResolver(filtersSchema),

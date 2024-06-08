@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import {
   ArrowDownCircle,
@@ -37,15 +37,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { useCategories } from '@/hooks/categories'
 import { api } from '@/lib/axios'
 import { cn } from '@/lib/utils'
-
-interface Category {
-  id: number
-  value: string
-  label: string
-  createdAt: Date
-}
 
 const createTransactionFormSchema = z
   .object({
@@ -104,14 +98,7 @@ export function NewTransactionForm() {
 
   const date = watch('date')
 
-  const { data: categories } = useQuery<Category[]>({
-    queryKey: ['categories'],
-    queryFn: async () => {
-      const response = await api.get('/categories')
-
-      return response.data
-    },
-  })
+  const categories = useCategories()
 
   const queryClient = useQueryClient()
 
