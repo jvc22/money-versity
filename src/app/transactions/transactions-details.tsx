@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { api } from '@/lib/axios'
+import { cn } from '@/lib/utils'
 import { priceFormatter } from '@/utils/formatter'
 
 interface TransactionDetailsProps {
@@ -47,10 +48,15 @@ export function TransactionDetails({ id, isOpen }: TransactionDetailsProps) {
   }
 
   return (
-    <DialogContent>
+    <DialogContent onOpenAutoFocus={(ev) => ev.preventDefault()}>
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
-          <span className="size-2 rounded-full bg-red-500" />
+          <span
+            className={cn(
+              'size-2 rounded-full',
+              transaction.status === 'income' ? 'bg-green-500' : 'bg-red-500',
+            )}
+          />
           {transaction.status.charAt(0).toUpperCase() +
             transaction.status.slice(1)}
         </DialogTitle>
