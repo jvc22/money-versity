@@ -27,7 +27,8 @@ model Transactions {
   amount      Float
   status      Status
   description String
-  createdAt   DateTime
+  createdAt   DateTime   @default(now())
+  createdAtTz DateTime
   categoryId  Int
   category    Categories @relation(fields: [categoryId], references: [id])
 

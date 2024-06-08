@@ -7,10 +7,7 @@ type RouteParams = {
   id: string
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: RouteParams },
-) {
+export async function DELETE(request: Request, params: RouteParams) {
   const paramsSchema = z.object({
     id: z.string().cuid(),
   })

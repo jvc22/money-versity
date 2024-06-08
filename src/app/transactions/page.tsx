@@ -26,7 +26,7 @@ import { TransactionsTableRow } from './transactions-table-row'
 
 interface Transaction {
   id: string
-  createdAt: Date
+  createdAtTz: Date
   amount: number
   status: 'income' | 'outcome'
   category: {
@@ -84,7 +84,7 @@ export default function Transactions() {
                 <TransactionsTableRow
                   key={transaction.id}
                   id={transaction.id}
-                  createdAt={transaction.createdAt}
+                  createdAt={transaction.createdAtTz}
                   amount={transaction.amount}
                   status={transaction.status}
                   category={transaction.category}

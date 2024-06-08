@@ -70,7 +70,7 @@ const createTransactionFormSchema = z
       const newVal = stringValue.replace(',', '.')
 
       return {
-        data: data.date,
+        date: data.date,
         amount: parseFloat(newVal),
         status: data.status,
         category: data.category,

@@ -7,7 +7,7 @@ export async function GET() {
   const transactions = await prisma.transactions.findMany({
     select: {
       id: true,
-      createdAt: true,
+      createdAtTz: true,
       amount: true,
       status: true,
       category: {
@@ -18,6 +18,9 @@ export async function GET() {
         },
       },
       description: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
     },
   })
 
@@ -46,7 +49,7 @@ export async function POST(request: Request) {
   }
 
   const newTransaction = {
-    createdAt: new Date(safeBody.data.date),
+    createdAtTz: new Date(safeBody.data.date),
     amount: Math.round(safeBody.data.amount * 100) / 100,
     status: safeBody.data.status,
     categoryId: safeBody.data.categoryId,
