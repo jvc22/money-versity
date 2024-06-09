@@ -17,6 +17,11 @@ interface Transaction {
   description: string
 }
 
+interface Data {
+  transactions: Transaction[]
+  totalCount: number
+}
+
 interface useTransactionsProps {
   params: {
     [key: string]: string | null
@@ -24,7 +29,7 @@ interface useTransactionsProps {
 }
 
 export function useTransactions({ params }: useTransactionsProps) {
-  const { data: transactions } = useQuery<Transaction[]>({
+  const { data } = useQuery<Data>({
     queryKey: ['transactions', params],
     queryFn: async () => {
       const urlWithParams = createUrlWithParams('/transactions', params)
@@ -36,7 +41,7 @@ export function useTransactions({ params }: useTransactionsProps) {
     placeholderData: keepPreviousData,
   })
 
-  return transactions || []
+  return { transactions: data?.transactions, totalCount: data?.totalCount }
 }
 
 interface useTransactionProps {

@@ -62,7 +62,7 @@ export function TransactionsFilters() {
     category ? params.set('category', category) : params.delete('category')
     date ? params.set('date', date) : params.delete('date')
 
-    router.push(`${pathname}?${params.toString()}`)
+    router.replace(`${pathname}?${params.toString()}`)
   }
 
   function handleCleanFilters() {
@@ -76,7 +76,7 @@ export function TransactionsFilters() {
       date: '',
     })
 
-    router.push(pathname)
+    router.replace(pathname)
   }
 
   const hasAnyFilter = !!status || !!category || !!date
