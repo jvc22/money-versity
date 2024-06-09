@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
+  const offset = request.nextUrl.searchParams.get('offset')
   const date = request.nextUrl.searchParams.get('date')
   const status = request.nextUrl.searchParams.get('status')
   const category = request.nextUrl.searchParams.get('category')
@@ -14,6 +15,8 @@ export async function GET(request: NextRequest) {
     ...(status && { status: status as Status }),
     ...(category && { category: { value: category } }),
   }
+
+  const totalCount = await prisma.transactions.count()
 
   const transactions = await prisma.transactions.findMany({
     where,
@@ -34,10 +37,12 @@ export async function GET(request: NextRequest) {
     orderBy: {
       createdAt: 'desc',
     },
+    take: 10,
+    skip: Number(offset) * 10,
   })
 
   if (transactions) {
-    return NextResponse.json(transactions, { status: 200 })
+    return NextResponse.json({ transactions, totalCount }, { status: 200 })
   }
 
   return NextResponse.json({}, { status: 404 })
