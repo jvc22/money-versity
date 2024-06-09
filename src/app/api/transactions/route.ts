@@ -16,7 +16,9 @@ export async function GET(request: NextRequest) {
     ...(category && { category: { value: category } }),
   }
 
-  const totalCount = await prisma.transactions.count()
+  const totalCount = await prisma.transactions.count({
+    where,
+  })
 
   const transactions = await prisma.transactions.findMany({
     where,

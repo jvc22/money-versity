@@ -22,7 +22,8 @@ export function Pagination({
   perPage,
   onPageChange,
 }: PaginationProps) {
-  const pages = Math.floor(totalCount / perPage) || 1
+  const pages = Math.ceil(totalCount / perPage)
+  const currentPage = pages === 0 ? 0 : pageIndex + 1
 
   return (
     <div className="flex items-center justify-between">
@@ -32,7 +33,7 @@ export function Pagination({
 
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {pageIndex + 1} of {pages}
+          Page {currentPage} of {pages}
         </div>
         <div className="flex items-center space-x-2">
           <Button
