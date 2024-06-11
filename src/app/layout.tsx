@@ -32,7 +32,7 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <div className="mx-auto flex max-w-6xl flex-col gap-8 p-5">
+        <div className="mx-auto flex max-w-7xl flex-col gap-8 p-5">
           <QueryClientProvider>
             <ThemeProvider
               attribute="class"
