@@ -34,3 +34,13 @@ model Transactions {
 
   @@map("transactions")
 }
+
+model Users {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  password  String
+  createdAt DateTime @default(now())
+
+  @@map("users")
+}

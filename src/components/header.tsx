@@ -15,7 +15,7 @@ export default function Header() {
       <Separator orientation="vertical" className="h-6" />
 
       <nav className="flex items-center gap-5">
-        <NavLink href="/">
+        <NavLink href="/dashboard">
           <Home className="size-4" />
           Dashboard
         </NavLink>
