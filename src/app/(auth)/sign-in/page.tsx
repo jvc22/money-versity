@@ -22,11 +22,11 @@ export default function SignIn() {
         </div>
 
         <form className="space-y-4">
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="email">Your e-mail</Label>
             <Input id="email" type="email" autoComplete="off" />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="email">Your secret password</Label>
             <Input id="password" type="password" />
           </div>
